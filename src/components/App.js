@@ -54,31 +54,36 @@ class App extends Component {
 
   async withdraw(e) {
     e.preventDefault()
-    try{
-      await this.state.dbank.methods.withdraw().send({from: this.state.account})
-    } catch(e) {
-      console.log('Error, withdraw: ', e)
+    if(this.state.dbank!=='undefined'){
+      try{
+        await this.state.dbank.methods.withdraw().send({from: this.state.account})
+      } catch(e) {
+        console.log('Error, withdraw: ', e)
+      }
     }
   }
 
   async borrow(amount) {
-    try{
-      await this.state.dbank.methods.borrow().send({value: amount.toString(), from: this.state.account})
-    } catch (e) {
-      console.log('Error, borrow: ', e)
+    if(this.state.dbank!=='undefined'){
+      try{
+        await this.state.dbank.methods.borrow().send({value: amount.toString(), from: this.state.account})
+      } catch (e) {
+        console.log('Error, borrow: ', e)
+      }
     }
   }
 
   async payOff(e) {
     e.preventDefault()
-    console.log(this.state.dbank)
-    try{
-      const collateralEther = await this.state.dbank.methods.collateralEther(this.state.account).call({from: this.state.account})
-      const tokenBorrowed = collateralEther/2
-      await this.state.token.methods.approve(this.state.dBankAddress, tokenBorrowed.toString()).send({from: this.state.account})
-      await this.state.dbank.methods.payOff().send({from: this.state.account})
-    } catch(e) {
-      console.log('Error, pay off: ', e)
+    if(this.state.dbank!=='undefined'){
+      try{
+        const collateralEther = await this.state.dbank.methods.collateralEther(this.state.account).call({from: this.state.account})
+        const tokenBorrowed = collateralEther/2
+        await this.state.token.methods.approve(this.state.dBankAddress, tokenBorrowed.toString()).send({from: this.state.account})
+        await this.state.dbank.methods.payOff().send({from: this.state.account})
+      } catch(e) {
+        console.log('Error, pay off: ', e)
+      }
     }
   }
 
