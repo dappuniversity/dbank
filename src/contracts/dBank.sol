@@ -83,7 +83,7 @@ contract dBank {
 
   function payOff() public {
     require(isBorrowed[msg.sender] == true, 'Error, loan not active');
-    require(token.transferFrom(msg.sender, address(this), collateralEther[msg.sender]/2), "Error, can't burn tokens"); //must approve dBank 1st
+    require(token.transferFrom(msg.sender, address(this), collateralEther[msg.sender]/2), "Error, can't receive tokens"); //must approve dBank 1st
 
     uint fee = collateralEther[msg.sender]/10; //calc 10% fee
 
