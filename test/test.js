@@ -111,7 +111,7 @@ contract('dBank', ([deployer, user]) => {
         expect(Number(await dbank.etherBalanceOf(user))).to.eq(0)
         expect(await dbank.isDeposited(user)).to.eq(false)
       })
-    })
+     })
 
     describe('failure', () => {
       it('withdrawing should be rejected', async () =>{
