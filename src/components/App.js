@@ -16,6 +16,7 @@ class App extends Component {
     if (typeof window.ethereum !== 'undefined') {
       const web3 = new Web3(window.ethereum)
 
+      // console.log({"web3":web3})
       const netId = await web3.eth.net.getId()
       const accounts = await web3.eth.getAccounts()
 
@@ -149,7 +150,7 @@ class App extends Component {
                             placeholder='amount...'
                             required />
                         </div>
-                        <button type='submit' className='btn btn-primary'>DEPOSIT</button>
+                        <button type='submit' className='btn btn-primary mt-3'>DEPOSIT</button>
                       </form>
 
                     </div>
@@ -160,7 +161,7 @@ class App extends Component {
                     <br></br>
                     <br></br>
                     <div>
-                      <button type='submit' className='btn btn-primary' onClick={(e) => this.withdraw(e)}>WITHDRAW</button>
+                      <button type='submit' className='btn btn-danger' onClick={(e) => this.withdraw(e)}>WITHDRAW</button>
                     </div>
                   </Tab>
                   <Tab eventKey="borrow" title="Borrow">
@@ -191,7 +192,7 @@ class App extends Component {
                             placeholder='amount...'
                             required />
                         </div>
-                        <button type='submit' className='btn btn-primary'>BORROW</button>
+                        <button type='submit' className='btn btn-warning mt-3'>BORROW</button>
                       </form>
                     </div>
                   </Tab>
@@ -204,7 +205,7 @@ class App extends Component {
                       (You'll receive your collateral - fee)
                       <br></br>
                       <br></br>
-                      <button type='submit' className='btn btn-primary' onClick={(e) => this.payOff(e)}>PAYOFF</button>
+                      <button type='submit' className='btn btn-success' onClick={(e) => this.payOff(e)}>PAYOFF</button>
                     </div>
                   </Tab>
                 </Tabs>
