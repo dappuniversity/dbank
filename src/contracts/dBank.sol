@@ -1,74 +1,112 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity >=0.6.0 <0.9.0;
 
 import "./Token.sol";
 
 contract dBank {
+    //assign Token contract to variable
+    Token private token;
 
-  //assign Token contract to variable
+    //add mappings
+    mapping(address => uint256) public etherBalanceOf;
+    mapping(address => uint256) public depositStart;
+    mapping(address => bool) public isDeposited;
 
-  //add mappings
+    //add events
+    event Deposit(address indexed user, uint256 etherAmount, uint256 timeStart);
+    event Withdraw(
+        address indexed user,
+        uint256 etherAmount,
+        uint256 depositTime,
+        uint256 interest
+    );
 
-  //add events
+    //pass as constructor argument deployed Token contract
+    constructor(Token _token) {
+        //assign token deployed contract to variable
+        token = _token;
+    }
 
-  //pass as constructor argument deployed Token contract
-  constructor() public {
-    //assign token deployed contract to variable
-  }
+    function deposit() public payable {
+        //check if msg.sender didn't already deposited funds
+        require(
+            isDeposited[msg.sender] == false,
+            "Error, deposit already active"
+        );
 
-  function deposit() payable public {
-    //check if msg.sender didn't already deposited funds
-    //check if msg.value is >= than 0.01 ETH
+        //check if msg.value is >= than 0.01 ETH
+        require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
 
-    //increase msg.sender ether deposit balance
-    //start msg.sender hodling time
+        //increase msg.sender ether deposit balance
+        etherBalanceOf[msg.sender] = etherBalanceOf[msg.sender] + msg.value;
 
-    //set msg.sender deposit status to true
-    //emit Deposit event
-  }
+        //start msg.sender hodling time
+        depositStart[msg.sender] = depositStart[msg.sender] + block.timestamp;
 
-  function withdraw() public {
-    //check if msg.sender deposit status is true
-    //assign msg.sender ether deposit balance to variable for event
+        //set msg.sender deposit status to true
+        isDeposited[msg.sender] = true;
 
-    //check user's hodl time
+        //emit Deposit event
+        emit Deposit(msg.sender, msg.value, block.timestamp);
+    }
 
-    //calc interest per second
-    //calc accrued interest
+    function withdraw() public {
+        //check if msg.sender deposit status is true
+        require(isDeposited[msg.sender] == true, "Error, no previous deposit");
+        uint256 userBalance = etherBalanceOf[msg.sender];
 
-    //send eth to user
-    //send interest in tokens to user
+        //assign msg.sender ether deposit balance to variable for event
 
-    //reset depositer data
+        //check user's hodl time
+        uint256 depositTime = block.timestamp - depositStart[msg.sender];
 
-    //emit event
-  }
+        //calc interest per second
+        uint256 interestPerSecond = 31668017 *
+            (etherBalanceOf[msg.sender] / 1e16);
 
-  function borrow() payable public {
-    //check if collateral is >= than 0.01 ETH
-    //check if user doesn't have active loan
+        //calc accrued interest
+        uint256 interest = interestPerSecond * depositTime;
 
-    //add msg.value to ether collateral
+        //send eth to user
+        payable(msg.sender).transfer(userBalance);
 
-    //calc tokens amount to mint, 50% of msg.value
+        //send interest in tokens to user
+        token.mint(msg.sender, interest);
 
-    //mint&send tokens to user
+        //reset depositer data
+        depositStart[msg.sender] = 0;
+        etherBalanceOf[msg.sender] = 0;
+        isDeposited[msg.sender] = false;
 
-    //activate borrower's loan status
+        //emit event
+        emit Withdraw(msg.sender, userBalance, depositTime, interest);
+    }
 
-    //emit event
-  }
+    // function borrow() payable public {
+    //   //check if collateral is >= than 0.01 ETH
+    //   //check if user doesn't have active loan
 
-  function payOff() public {
-    //check if loan is active
-    //transfer tokens from user back to the contract
+    //   //add msg.value to ether collateral
 
-    //calc fee
+    //   //calc tokens amount to mint, 50% of msg.value
 
-    //send user's collateral minus fee
+    //   //mint&send tokens to user
 
-    //reset borrower's data
+    //   //activate borrower's loan status
 
-    //emit event
-  }
+    //   //emit event
+    // }
+
+    // function payOff() public {
+    //   //check if loan is active
+    //   //transfer tokens from user back to the contract
+
+    //   //calc fee
+
+    //   //send user's collateral minus fee
+
+    //   //reset borrower's data
+
+    //   //emit event
+    // }
 }
